@@ -1,8 +1,8 @@
 package driver
 
 import (
-	"fmt"
 	"os"
+	"strings"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -10,26 +10,38 @@ import (
 	"github.com/xiaoshouchen/go-model-gen/vars"
 )
 
-func InitPostgres(tables []string) []vars.Schema {
+type Postgres struct {
+	PublicFunc
+}
+
+func NewPostgres() *Postgres {
+	return &Postgres{}
+}
+
+func (p *Postgres) TransType(filedType string, nullable string) string {
+	var dateType string
+	dateType = strings.ToLower(dateType)
+	switch filedType {
+	case "smallint", "integer", "int", "bigint", "serial", "bigserial", "smallserial", "tinyint", "mediumint":
+		dateType = "int64"
+	case "decimal", "numeric", "real", "double precision", "money", "float", "double":
+		dateType = "float64"
+	case "text", "varchar", "character varying", "character", "char":
+		dateType = "string"
+	case "boolean":
+		dateType = "bool"
+	default:
+		dateType = "interface{}"
+	}
+	return dateType
+}
+
+func (p *Postgres) GetTableStructure(schema string, tables []string) []vars.Structure {
+	return p.getTableStructure(schema, tables)
+}
+
+func (*Postgres) Init(dbc vars.DatabaseConfig) []vars.Structure {
 	dsn := os.ExpandEnv("user=$DB_USER password=$DB_PASSWORD host=$DB_HOST port=$DB_PORT dbname=$DB_DATABASE sslmode=$DB_SSL_MODE")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-
-	var schemas []vars.Schema
-	sql := `SELECT table_name,column_name,data_type FROM information_schema.columns WHERE table_name = '%s';`
-
-	for _, v := range tables {
-		var res []vars.Field
-		db.Raw(fmt.Sprintf(sql, v)).Scan(&res)
-
-		schemas = append(schemas, vars.Schema{
-			TableName: v,
-			Fields:    res,
-		})
-	}
-
-	return schemas
-
+	_, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	return nil
 }

@@ -1,6 +1,6 @@
 package vars
 
-type Schema struct {
+type Structure struct {
 	TableName string  `json:"table_name"`
 	Fields    []Field `json:"fields"`
 }
@@ -8,10 +8,23 @@ type Schema struct {
 type Field struct {
 	ColumnName string `json:"column_name"`
 	DataType   string `json:"data_type"`
+	IsNullable string `json:"is_nullable"`
 }
 
 type Result struct {
 	TableName  string `json:"table_name"`
 	ColumnName string `json:"column_name"`
 	DataType   string `json:"data_type"`
+}
+
+type DatabaseConfig struct {
+	Scheme  string `json:"scheme"`
+	Connect struct {
+		Type     string `json:"type"`
+		Host     string `json:"host"`
+		Port     string `json:"port"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+	} `json:"connect"`
+	Tables []string `json:"tables"`
 }
