@@ -3,13 +3,13 @@ module github.com/xiaoshouchen/go-model-gen
 go 1.19
 
 require (
+	github.com/gertd/go-pluralize v0.2.1
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/postgres v1.4.5
 	gorm.io/gorm v1.25.1
 )
 
 require (
-	github.com/gertd/go-pluralize v0.2.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect

@@ -13,9 +13,11 @@ import (
 	"go/format"
 	"log"
 	"os"
+	"syscall"
 )
 
 var dataSource = flag.String("f", "data_source.json", "文件地址")
+var outputSource = flag.String("o", "./model/", "文件输出位置")
 
 func main() {
 	var configs = make([]vars.DatabaseConfig, 0)
@@ -41,12 +43,12 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				err = os.WriteFile("model/"+plur.Singular(s.TableName)+"_gen.go", bytes, 0664)
+				err = os.WriteFile(*outputSource+plur.Singular(s.TableName)+"_gen.go", bytes, 0664)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
-				path := "model/" + plur.Singular(s.TableName) + ".go"
+				path := *outputSource + plur.Singular(s.TableName) + ".go"
 				if exists, err := pkg.FileExists(path); !exists || err != nil {
 					err = os.WriteFile(path, []byte("package model"), 0664)
 					if err != nil {
@@ -55,6 +57,7 @@ func main() {
 				}
 			}
 		}
+		syscall.Exec("gofmt", []string{"-w", *outputSource}, []string{})
 	}
 
 }
