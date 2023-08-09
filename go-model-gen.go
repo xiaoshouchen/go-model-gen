@@ -26,7 +26,7 @@ func main() {
 	for _, config := range configs {
 		inst := driver2.GetInstance(config)
 		schemas := inst.GetTableStructure(config.Scheme, config.Tables)
-		err := os.Mkdir("model", 0777)
+		err := os.Mkdir(*outputSource, 0777)
 		if err != nil && !os.IsExist(err) {
 			fmt.Println(err)
 			return

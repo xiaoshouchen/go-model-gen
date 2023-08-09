@@ -1,11 +1,7 @@
 //go:gen DON'T EDIT !
 package model
 
-import (
-	"database/sql"
-	"gorm.io/gorm"
-	"time"
-)
+import "gorm.io/gorm"
 
 type %s struct {
 	%s
