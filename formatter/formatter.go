@@ -18,6 +18,9 @@ var model string
 //go:embed tpl/repo.tpl
 var repo string
 
+//go:embed tpl/table_name.tpl
+var tableName string
+
 type Formatter struct {
 	pluralize *pluralize.Client
 }
@@ -31,7 +34,8 @@ func NewFormatter() *Formatter {
 func (formatter *Formatter) Generate(table vars.Structure) string {
 	modelStr := formatter.generateModel(table.TableName, formatter.joinFields(table.Fields))
 	repoStr := formatter.generateRepo(table.TableName)
-	return strings.Join([]string{modelStr, repoStr}, "\n")
+	nameStr := formatter.generateTableName(table.TableName)
+	return strings.Join([]string{modelStr, repoStr, nameStr}, "\n")
 }
 
 func (formatter *Formatter) generateField(f vars.Field) string {
@@ -56,4 +60,9 @@ func (formatter *Formatter) generateModel(table, field string) string {
 func (formatter *Formatter) generateRepo(table string) string {
 	tableStr := formatter.pluralize.Singular(pkg.LineToCamel(table))
 	return fmt.Sprintf(repo, tableStr, tableStr, tableStr, tableStr)
+}
+
+func (formatter *Formatter) generateTableName(table string) string {
+	tableStr := formatter.pluralize.Singular(pkg.LineToCamel(table))
+	return fmt.Sprintf(tableName, tableStr, table)
 }
