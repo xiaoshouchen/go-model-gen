@@ -27,12 +27,12 @@ func GetInstance(config vars.DatabaseConfig) I {
 
 func (d *PublicFunc) getTableStructure(schema string, tables []string) []vars.Structure {
 	var schemas []vars.Structure
-	sql := `SELECT table_name,column_name,data_type,is_nullable FROM information_schema.columns WHERE table_name = ? and table_schema = ?;`
-
+	sql := "SELECT column_name as column_name,data_type as data_type,is_nullable as is_nullable," +
+		"column_comment as column_comment,column_key as column_key,column_default as column_default " +
+		"FROM information_schema.columns WHERE table_name = ? and table_schema = ?;"
 	for _, v := range tables {
 		var res []vars.Field
 		d.db.Raw(sql, v, schema).Scan(&res)
-
 		schemas = append(schemas, vars.Structure{
 			TableName: v,
 			Fields:    res,

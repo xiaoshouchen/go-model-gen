@@ -1,16 +1,17 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/gertd/go-pluralize"
 	driver2 "github.com/xiaoshouchen/go-model-gen/driver"
-	"github.com/xiaoshouchen/go-model-gen/formatter"
 	"github.com/xiaoshouchen/go-model-gen/pkg"
 	"github.com/xiaoshouchen/go-model-gen/vars"
 	"go/format"
+	"html/template"
 	"log"
 	"os"
 	"syscall"
@@ -18,6 +19,15 @@ import (
 
 var dataSource = flag.String("f", "data_source.json", "文件地址")
 var outputSource = flag.String("o", "./model/", "文件输出位置")
+
+//go:embed tpl/model.tpl
+var model string
+
+//go:embed tpl/field.tpl
+var field string
+
+//go:embed tpl/insert.tpl
+var insert string
 
 func main() {
 	var configs = make([]vars.DatabaseConfig, 0)
@@ -33,17 +43,33 @@ func main() {
 		}
 		if len(schemas) > 0 {
 			for _, s := range schemas {
-				for k, v := range s.Fields {
-					v.DataType = inst.TransType(v.DataType, v.IsNullable)
-					s.Fields[k] = v
+				t, err := template.New("modelTpl").Funcs(template.FuncMap{
+					"lowCamel":  pkg.LineToLowCamel,
+					"upCamel":   pkg.LineToUpCamel,
+					"singular":  plur.Singular,
+					"plural":    plur.Plural,
+					"transType": inst.TransType,
+				}).Parse(insert + field + model)
+				if err != nil {
+					log.Fatal(err)
+					return
 				}
-				fileContent := formatter.NewFormatter().Generate(s)
-				bytes := []byte(fileContent)
-				bytes, err = format.Source(bytes)
+				var buf = new(bytes.Buffer)
+				if err != nil {
+					return
+				}
 				if err != nil {
 					log.Fatal(err)
 				}
-				err = os.WriteFile(*outputSource+plur.Singular(s.TableName)+"_gen.go", bytes, 0664)
+				err = t.ExecuteTemplate(buf, "modelTpl", s)
+				fmt.Println(string(buf.Bytes()))
+				source, err := format.Source(buf.Bytes())
+				if err != nil {
+					log.Fatal(err)
+					return
+				}
+				fileName := *outputSource + plur.Singular(s.TableName) + "_gen.go"
+				err = os.WriteFile(fileName, source, 0664)
 				if err != nil {
 					fmt.Println(err)
 					return

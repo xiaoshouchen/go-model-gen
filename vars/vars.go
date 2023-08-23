@@ -3,18 +3,27 @@ package vars
 type Structure struct {
 	TableName string  `json:"table_name"`
 	Fields    []Field `json:"fields"`
+	HasNull   bool    `json:"has_null"`
+	HasTime   bool    `json:"has_time"`
 }
 
 type Field struct {
-	ColumnName string `json:"column_name"`
-	DataType   string `json:"data_type"`
-	IsNullable string `json:"is_nullable"`
+	ColumnName    string `json:"column_name"`
+	DataType      string `json:"data_type"`
+	IsNullable    string `json:"is_nullable"`
+	ColumnComment string `json:"column_comment"`
+	ColumnKey     string `json:"column_key"`
+	ColumnDefault string `json:"column_default"`
 }
 
 type Result struct {
-	TableName  string `json:"table_name"`
-	ColumnName string `json:"column_name"`
-	DataType   string `json:"data_type"`
+	TableName     string      `json:"table_name"`
+	ColumnName    string      `json:"column_name"`
+	DataType      string      `json:"data_type"`
+	IsNullable    string      `json:"is_nullable"`
+	ColumnComment string      `json:"column_comment"`
+	ColumnKey     string      `json:"column_key"`
+	ColumnDefault interface{} `json:"column_default"`
 }
 
 type DatabaseConfig struct {
