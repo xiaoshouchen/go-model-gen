@@ -2,12 +2,8 @@
 package model
 
 import (
-{{if .HasNull}}
-   "database/sql"
-{{end}}
-{{if .HasTime}}
-    "time"
-{{end}}
+{{if .HasNull}}"database/sql"{{end}}
+{{if .HasTime}}"time"{{end}}
 
 	"gorm.io/gorm"
     "gorm.io/gorm/clause"
