@@ -22,3 +22,10 @@ func LineToUpCamel(str string) string {
 	}
 	return strings.Join(strSlice, "")
 }
+
+// Inline 备注变成一行
+func Inline(str string) string {
+	str = strings.Replace(str, "\n", " ", -1)
+	str = strings.Replace(str, "\t", " ", -1)
+	return str
+}

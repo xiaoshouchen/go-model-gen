@@ -46,6 +46,7 @@ func main() {
 				t, err := template.New("modelTpl").Funcs(template.FuncMap{
 					"lowCamel":  pkg.LineToLowCamel,
 					"upCamel":   pkg.LineToUpCamel,
+					"inline":    pkg.Inline,
 					"singular":  plur.Singular,
 					"plural":    plur.Plural,
 					"transType": inst.TransType,
@@ -62,7 +63,8 @@ func main() {
 				err = t.ExecuteTemplate(buf, "modelTpl", s)
 				source, err := format.Source(buf.Bytes())
 				if err != nil {
-					log.Fatal(err)
+					fmt.Println(string(buf.Bytes()))
+					log.Fatal(s.TableName, err)
 					return
 				}
 				fileName := *outputSource + plur.Singular(s.TableName) + "_gen.go"
