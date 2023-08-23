@@ -2,7 +2,6 @@ package driver
 
 import (
 	"fmt"
-	"gorm.io/gorm/logger"
 	"log"
 	"strings"
 
@@ -71,7 +70,6 @@ func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool)
 
 func (m *Mysql) GetTableStructure(schema string, tables []string) []vars.Structure {
 	res := m.getTableStructure(schema, tables)
-	fmt.Println(res)
 	for k, v := range res {
 		hasNull, hasTime := m.HasSpecialType(v.Fields)
 		v.HasNull = hasNull
@@ -86,7 +84,7 @@ func InitMysql(config vars.DatabaseConfig) *gorm.DB {
 	dnsStr := "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf(dnsStr, con.User, con.Password, con.Host, con.Port, config.Scheme)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		//Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		log.Fatal(err)

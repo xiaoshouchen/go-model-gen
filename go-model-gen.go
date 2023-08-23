@@ -56,13 +56,10 @@ func main() {
 				}
 				var buf = new(bytes.Buffer)
 				if err != nil {
+					log.Fatal(err)
 					return
 				}
-				if err != nil {
-					log.Fatal(err)
-				}
 				err = t.ExecuteTemplate(buf, "modelTpl", s)
-				fmt.Println(string(buf.Bytes()))
 				source, err := format.Source(buf.Bytes())
 				if err != nil {
 					log.Fatal(err)
