@@ -29,6 +29,9 @@ var field string
 //go:embed tpl/insert.tpl
 var insert string
 
+//go:embed tpl/omit.tpl
+var omit string
+
 func main() {
 	var configs = make([]vars.DatabaseConfig, 0)
 	getConfig(&configs)
@@ -50,7 +53,7 @@ func main() {
 					"singular":  plur.Singular,
 					"plural":    plur.Plural,
 					"transType": inst.TransType,
-				}).Parse(insert + field + model)
+				}).Parse(omit + insert + field + model)
 				if err != nil {
 					log.Fatal(err)
 					return

@@ -27,3 +27,4 @@ func New{{$modelName}}Repo(db *gorm.DB)*{{$modelName}}Repo{
 }
 
 {{template "insert" .}}
+{{template "omit" .}}
