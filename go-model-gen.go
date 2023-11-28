@@ -47,12 +47,13 @@ func main() {
 		if len(schemas) > 0 {
 			for _, s := range schemas {
 				t, err := template.New("modelTpl").Funcs(template.FuncMap{
-					"lowCamel":  pkg.LineToLowCamel,
-					"upCamel":   pkg.LineToUpCamel,
-					"inline":    pkg.Inline,
-					"singular":  plur.Singular,
-					"plural":    plur.Plural,
-					"transType": inst.TransType,
+					"lowCamel":       pkg.LineToLowCamel,
+					"upCamel":        pkg.LineToUpCamel,
+					"inline":         pkg.Inline,
+					"singular":       plur.Singular,
+					"plural":         plur.Plural,
+					"transType":      inst.TransType,
+					"containsNumber": pkg.ContainsNumber,
 				}).Parse(omit + insert + field + model)
 				if err != nil {
 					log.Fatal(err)

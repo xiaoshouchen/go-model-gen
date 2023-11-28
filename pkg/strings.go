@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -28,4 +29,10 @@ func Inline(str string) string {
 	str = strings.Replace(str, "\n", " ", -1)
 	str = strings.Replace(str, "\t", " ", -1)
 	return str
+}
+
+// ContainsNumber 判断字符串是否包含数字
+func ContainsNumber(s string) bool {
+	pattern := regexp.MustCompile(`\d`)
+	return pattern.MatchString(s)
 }
