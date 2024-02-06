@@ -7,7 +7,7 @@
     {{- end}}
     }
     }
-    // omit 过滤自己不想要的字段
+    // Omit 过滤自己不想要的字段
     func (r *{{$modelName}}Repo) Omit(filter []string) []string {
     fields := r.getAllFields()
     result := make([]string, 0, len(fields))
