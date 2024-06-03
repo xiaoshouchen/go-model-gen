@@ -1,12 +1,11 @@
 //go:gen DON'T EDIT !
-package model
+package clickhouse_model
 
 import (
 {{if .HasNull}}"database/sql"{{end}}
 {{if .HasTime}}"time"{{end}}
 
 	"gorm.io/gorm"
-    "gorm.io/gorm/clause"
 )
 
 {{ $modelName :=.TableName | singular | upCamel }}

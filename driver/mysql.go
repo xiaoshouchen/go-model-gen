@@ -1,6 +1,7 @@
 package driver
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"strings"
@@ -20,7 +21,7 @@ func NewMysql(config vars.DatabaseConfig) *Mysql {
 }
 
 // TransType 翻译数据类型，从mysql的格式到golang的格式
-func (m *Mysql) TransType(filedType string, nullable string) string {
+func (m *Mysql) TransType(filedType string, nullable string, name string) string {
 	var dateType string
 	dateType = strings.ToLower(dateType)
 	switch filedType {
@@ -53,16 +54,22 @@ func (m *Mysql) TransType(filedType string, nullable string) string {
 	default:
 		dateType = "interface{}"
 	}
+	if strings.Contains(name, "deleted_at") {
+		dateType = "soft_delete.DeletedAt"
+	}
 	return dateType
 }
 
-func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool) {
+func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool, hasSoftDelete bool) {
 	for _, v := range fields {
-		res := m.TransType(v.DataType, v.IsNullable)
+		res := m.TransType(v.DataType, v.IsNullable, v.ColumnName)
 		if strings.Contains(res, "time") {
 			hasTime = true
 		} else if strings.Contains(res, "sql") {
 			hasNull = true
+		}
+		if strings.Contains(res, "soft_delete") {
+			hasSoftDelete = true
 		}
 	}
 	return
@@ -71,9 +78,10 @@ func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool)
 func (m *Mysql) GetTableStructure(schema string, tables []string) []vars.Structure {
 	res := m.getTableStructure(schema, tables)
 	for k, v := range res {
-		hasNull, hasTime := m.HasSpecialType(v.Fields)
+		hasNull, hasTime, hasSoftDelete := m.HasSpecialType(v.Fields)
 		v.HasNull = hasNull
 		v.HasTime = hasTime
+		v.SoftDelete = hasSoftDelete
 		res[k] = v
 	}
 	return res
@@ -90,4 +98,20 @@ func InitMysql(config vars.DatabaseConfig) *gorm.DB {
 		log.Fatal(err)
 	}
 	return db
+}
+
+//go:embed tpl/mysql/model.tpl
+var mysqlModel string
+
+//go:embed tpl/mysql/field.tpl
+var mysqlField string
+
+//go:embed tpl/mysql/insert.tpl
+var mysqlInsert string
+
+//go:embed tpl/mysql/omit.tpl
+var mysqlOmit string
+
+func (m *Mysql) GetTpl() string {
+	return mysqlModel + mysqlField + mysqlInsert + mysqlOmit
 }

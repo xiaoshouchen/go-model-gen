@@ -1,10 +1,11 @@
 package vars
 
 type Structure struct {
-	TableName string  `json:"table_name"`
-	Fields    []Field `json:"fields"`
-	HasNull   bool    `json:"has_null"`
-	HasTime   bool    `json:"has_time"`
+	TableName  string  `json:"table_name"`
+	Fields     []Field `json:"fields"`
+	HasNull    bool    `json:"has_null"`
+	HasTime    bool    `json:"has_time"`
+	SoftDelete bool    `json:"soft_delete"`
 }
 
 type Field struct {
@@ -27,8 +28,9 @@ type Result struct {
 }
 
 type DatabaseConfig struct {
-	Scheme  string `json:"scheme"`
-	Connect struct {
+	Scheme      string `json:"scheme"`
+	PackageName string `json:"package_name"`
+	Connect     struct {
 		Type     string `json:"type"`
 		Host     string `json:"host"`
 		Port     string `json:"port"`

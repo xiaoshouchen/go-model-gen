@@ -18,7 +18,7 @@ func NewPostgres() *Postgres {
 	return &Postgres{}
 }
 
-func (p *Postgres) TransType(filedType string, nullable string) string {
+func (p *Postgres) TransType(filedType string, nullable string, name string) string {
 	var dateType string
 	dateType = strings.ToLower(dateType)
 	switch filedType {
@@ -44,4 +44,8 @@ func (*Postgres) Init(dbc vars.DatabaseConfig) []vars.Structure {
 	dsn := os.ExpandEnv("user=$DB_USER password=$DB_PASSWORD host=$DB_HOST port=$DB_PORT dbname=$DB_DATABASE sslmode=$DB_SSL_MODE")
 	_, _ = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	return nil
+}
+
+func (p *Postgres) GetTpl() string {
+	return ""
 }

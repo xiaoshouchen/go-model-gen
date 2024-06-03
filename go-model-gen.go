@@ -20,18 +20,6 @@ import (
 var dataSource = flag.String("f", "data_source.json", "文件地址")
 var outputSource = flag.String("o", "./model/", "文件输出位置")
 
-//go:embed tpl/model.tpl
-var model string
-
-//go:embed tpl/field.tpl
-var field string
-
-//go:embed tpl/insert.tpl
-var insert string
-
-//go:embed tpl/omit.tpl
-var omit string
-
 func main() {
 	var configs = make([]vars.DatabaseConfig, 0)
 	getConfig(&configs)
@@ -54,7 +42,7 @@ func main() {
 					"plural":         plur.Plural,
 					"transType":      inst.TransType,
 					"containsNumber": pkg.ContainsNumber,
-				}).Parse(omit + insert + field + model)
+				}).Parse(inst.GetTpl())
 				if err != nil {
 					log.Fatal(err)
 					return
@@ -79,7 +67,8 @@ func main() {
 				}
 				path := *outputSource + plur.Singular(s.TableName) + ".go"
 				if exists, err := pkg.FileExists(path); !exists || err != nil {
-					err = os.WriteFile(path, []byte("package model"), 0664)
+					pkgName := "package " + config.PackageName
+					err = os.WriteFile(path, []byte(pkgName), 0664)
 					if err != nil {
 						return
 					}

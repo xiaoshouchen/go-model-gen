@@ -17,4 +17,4 @@
 .idea
 .env
 model
-data_source.json
+model/data_source.json

@@ -11,8 +11,9 @@ type PublicFunc struct {
 }
 
 type I interface {
-	TransType(filedType string, nullable string) string
+	TransType(filedType string, nullable string, name string) string
 	GetTableStructure(schema string, tables []string) []vars.Structure
+	GetTpl() string
 }
 
 func GetInstance(config vars.DatabaseConfig) I {
@@ -21,6 +22,8 @@ func GetInstance(config vars.DatabaseConfig) I {
 		return NewMysql(config)
 	case "postgres":
 		return NewPostgres()
+	case "clickhouse":
+		return NewClickhouse(config)
 	}
 	return nil
 }
