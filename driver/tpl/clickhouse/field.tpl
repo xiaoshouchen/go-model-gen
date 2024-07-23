@@ -1,5 +1,5 @@
 {{- define "field"}}
-    {{.ColumnName | upCamel}} {{transType .DataType .IsNullable  }} `json:"{{.ColumnName}}" {{template "gorm" .}}` //{{.ColumnComment|inline}}
+    {{.ColumnName | upCamel}} {{transType .DataType .IsNullable .ColumnName }} `json:"{{.ColumnName}}" {{template "gorm" .}}` //{{.ColumnComment|inline}}
 {{- end}}
 
 {{- define "gorm"}}

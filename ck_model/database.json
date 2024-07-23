@@ -1,0 +1,18 @@
+{
+  "databases": [
+    {
+      "package_name": "clickhouse_model",
+      "scheme": "manager",
+      "connect": {
+        "type": "clickhouse",
+        "host": "10.17.1.4",
+        "port": "9000",
+        "user": "default",
+        "password": "123456"
+      },
+      "tables": [
+        "account_active_retains"
+      ]
+    }
+  ]
+}

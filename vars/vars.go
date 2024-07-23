@@ -5,7 +5,7 @@ type Structure struct {
 	Fields     []Field `json:"fields"`
 	HasNull    bool    `json:"has_null"`
 	HasTime    bool    `json:"has_time"`
-	SoftDelete bool    `json:"soft_delete"`
+	SoftDelete int     `json:"soft_delete"`
 }
 
 type Field struct {

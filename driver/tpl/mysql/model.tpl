@@ -7,7 +7,7 @@ import (
 
 	"gorm.io/gorm"
     "gorm.io/gorm/clause"
-{{if .SoftDelete}}"gorm.io/plugin/soft_delete"{{end}}
+{{if eq .SoftDelete 1}}"gorm.io/plugin/soft_delete"{{end}}
 )
 
 {{ $modelName :=.TableName | singular | upCamel }}

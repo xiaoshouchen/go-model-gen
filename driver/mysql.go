@@ -27,6 +27,9 @@ func (m *Mysql) TransType(filedType string, nullable string, name string) string
 	switch filedType {
 	case "smallint", "integer", "int", "bigint", "serial", "bigserial", "smallserial", "tinyint", "mediumint":
 		dateType = "int64"
+		if strings.Contains(name, "deleted_at") {
+			dateType = "soft_delete.DeletedAt"
+		}
 	case "decimal", "numeric", "real", "double precision", "money", "float", "double":
 		if strings.ToLower(nullable) == "yes" {
 			dateType = "sql.NullFloat64"
@@ -51,16 +54,16 @@ func (m *Mysql) TransType(filedType string, nullable string, name string) string
 		} else {
 			dateType = "time.Time"
 		}
+		if strings.Contains(name, "deleted_at") {
+			dateType = "gorm.DeletedAt"
+		}
 	default:
 		dateType = "interface{}"
-	}
-	if strings.Contains(name, "deleted_at") {
-		dateType = "soft_delete.DeletedAt"
 	}
 	return dateType
 }
 
-func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool, hasSoftDelete bool) {
+func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool, hasSoftDelete int) {
 	for _, v := range fields {
 		res := m.TransType(v.DataType, v.IsNullable, v.ColumnName)
 		if strings.Contains(res, "time") {
@@ -68,8 +71,11 @@ func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool,
 		} else if strings.Contains(res, "sql") {
 			hasNull = true
 		}
-		if strings.Contains(res, "soft_delete") {
-			hasSoftDelete = true
+		if strings.Contains(res, "soft_delete.DeletedAt") {
+			hasSoftDelete = 1
+		}
+		if strings.Contains(res, "gorm.DeletedAt") {
+			hasSoftDelete = 2
 		}
 	}
 	return

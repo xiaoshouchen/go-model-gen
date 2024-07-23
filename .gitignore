@@ -18,3 +18,4 @@
 .env
 model
 model/data_source.json
+/ck_model/
