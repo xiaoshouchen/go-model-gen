@@ -28,11 +28,18 @@ func GetInstance(config vars.DatabaseConfig) I {
 	return nil
 }
 
+func (d *PublicFunc) getTables(schema string) []string {
+	var tables []string
+	sql := "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA= ?"
+	d.db.Raw(sql, schema).Pluck("table_name", &tables)
+	return tables
+}
+
 func (d *PublicFunc) getTableStructure(schema string, tables []string) []vars.Structure {
 	var schemas []vars.Structure
 	sql := "SELECT column_name as column_name,data_type as data_type,is_nullable as is_nullable," +
 		"column_comment as column_comment,column_key as column_key,column_default as column_default " +
-		"FROM information_schema.columns WHERE table_name = ? and table_schema = ?;"
+		"FROM information_schema.columns WHERE table_name = ? and table_schema = ? order by ordinal_position;"
 	for _, v := range tables {
 		var res []vars.Field
 		d.db.Raw(sql, v, schema).Scan(&res)

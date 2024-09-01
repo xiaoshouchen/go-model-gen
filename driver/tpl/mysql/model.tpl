@@ -27,5 +27,9 @@ func New{{$modelName}}Repo(db *gorm.DB)*{{$modelName}}Repo{
     return &{{$modelName}}Repo{db: db}
 }
 
+func (r *{{$modelName}}Repo) DB()*gorm.DB{
+return r.db
+}
+
 {{template "insert" .}}
 {{template "omit" .}}

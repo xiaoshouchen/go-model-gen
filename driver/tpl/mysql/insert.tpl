@@ -1,11 +1,9 @@
 {{define "insert"}}
 {{ $modelName := .TableName | singular | upCamel }}
-// Insert 插入，支持批量插入，单个插入，支持分批插入，支持冲突更新或者报错
-// allowUpdate 允许报错更新
-// batchSize 如果数据过多，比如几万个，则需要拆分多个，等于小于0则不分批
-func (r *{{$modelName}}Repo) Insert(allowUpdate bool, batchSize int, insertSlice ...*{{$modelName}})(int64, error) {
+// BatchUpsert 批量插入或更新
+func (r *{{$modelName}}Repo) BatchUpsert(insertSlice ...*{{$modelName}})(int64, error) {
 	db := r.db
-	if allowUpdate {
+
 		db = db.Clauses(
 			clause.OnConflict{
 				Columns: []clause.Column{
@@ -24,13 +22,33 @@ func (r *{{$modelName}}Repo) Insert(allowUpdate bool, batchSize int, insertSlice
 				}),
 			},
 		)
-	}
-if batchSize > 0 {
-db = db.CreateInBatches(insertSlice, batchSize)
+
+if len(insertSlice) > 1000 {
+db = db.CreateInBatches(insertSlice, 1000)
 
 } else {
 db = db.Create(insertSlice)
 }
 return db.RowsAffected, db.Error
 }
+
+func (r *{{$modelName}}Repo) BatchInsert(insertSlice ...*{{$modelName}})(int64, error) {
+db := r.db
+if len(insertSlice) > 1000 {
+db = db.CreateInBatches(insertSlice, 1000)
+
+} else {
+db = db.Create(insertSlice)
+}
+return db.RowsAffected, db.Error
+}
+
+// Insert 插入单个
+// return id
+func (r *{{$modelName}}Repo) Insert(insert *{{$modelName}})error {
+db := r.db
+db = db.Create(insert)
+return db.Error
+}
+
 {{end}}

@@ -37,5 +37,6 @@ type DatabaseConfig struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
 	} `json:"connect"`
-	Tables []string `json:"tables"`
+	Tables            []string `json:"tables"`
+	TableFilterOption string   `json:"table_filter_option"`
 }

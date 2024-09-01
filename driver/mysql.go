@@ -14,10 +14,14 @@ import (
 
 type Mysql struct {
 	PublicFunc
+	config vars.DatabaseConfig
 }
 
 func NewMysql(config vars.DatabaseConfig) *Mysql {
-	return &Mysql{PublicFunc{db: InitMysql(config)}}
+	return &Mysql{
+		PublicFunc: PublicFunc{db: InitMysql(config)},
+		config:     config,
+	}
 }
 
 // TransType 翻译数据类型，从mysql的格式到golang的格式
@@ -36,7 +40,7 @@ func (m *Mysql) TransType(filedType string, nullable string, name string) string
 		} else {
 			dateType = "float64"
 		}
-	case "text", "varchar", "character varying", "character", "char", "mediumtext":
+	case "text", "varchar", "character varying", "character", "char", "mediumtext", "time":
 		if strings.ToLower(nullable) == "yes" {
 			dateType = "sql.NullString"
 		} else {
@@ -57,6 +61,8 @@ func (m *Mysql) TransType(filedType string, nullable string, name string) string
 		if strings.Contains(name, "deleted_at") {
 			dateType = "gorm.DeletedAt"
 		}
+	case "bit":
+		dateType = "[]byte"
 	default:
 		dateType = "interface{}"
 	}
@@ -82,6 +88,9 @@ func (m *Mysql) HasSpecialType(fields []vars.Field) (hasNull bool, hasTime bool,
 }
 
 func (m *Mysql) GetTableStructure(schema string, tables []string) []vars.Structure {
+	if m.config.TableFilterOption == "all" {
+		tables = m.getTables(schema)
+	}
 	res := m.getTableStructure(schema, tables)
 	for k, v := range res {
 		hasNull, hasTime, hasSoftDelete := m.HasSpecialType(v.Fields)
